@@ -126,6 +126,22 @@ public extension MetaMaskSDK {
     func terminateConnection() {
         ethereum.terminateConnection()
     }
+	
+	func requestWithJSON<T: CodableData>(_ request: EthereumRequest<T>) async throws -> Result<String, RequestError> {
+		let requestResult = await ethereum.requestWithJSON(request)
+		
+		switch requestResult {
+		case let .success(value):
+			let jsonData = try JSONSerialization.data(withJSONObject: value)
+			if let jsonString = String(data: jsonData, encoding: .utf8) {
+				return .success(jsonString)
+			} else {
+				return .failure(.responseError)
+			}
+		case let .failure(error):
+			return .failure(error)
+		}
+	}
 
     func request<T: CodableData>(_ request: EthereumRequest<T>) async -> Result<String, RequestError> {
        await ethereum.request(request)
