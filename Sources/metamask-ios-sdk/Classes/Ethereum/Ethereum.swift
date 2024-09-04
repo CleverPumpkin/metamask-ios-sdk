@@ -335,6 +335,10 @@ public class Ethereum {
     func connectWith<T: CodableData>(_ req: EthereumRequest<T>) async -> Result<String, RequestError> {
         return await performAsyncOperation(connectWith(req), defaultValue: String()) as Result<String, RequestError>
     }
+	
+	func connectWithJSON<T: CodableData>(_ req: EthereumRequest<T>) async -> Result<Any, RequestError> {
+		return await performAsyncOperationWithJSON(connectWith(req))
+	}
 
     // MARK: Convenience Methods
 
