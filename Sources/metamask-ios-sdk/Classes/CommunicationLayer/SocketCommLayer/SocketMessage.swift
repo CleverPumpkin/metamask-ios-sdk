@@ -82,6 +82,7 @@ public struct SocketMessage<T: Codable>: CodableData, Mappable {
     }
 
     public static func message(from message: [String: Any]) throws -> SocketMessage<T> {
+		Logging.log("SocketMessage.message(from:) message: \(message)")
         do {
             let json = try JSONSerialization.data(withJSONObject: message)
             let message = try JSONDecoder().decode(SocketMessage<T>.self, from: json)
