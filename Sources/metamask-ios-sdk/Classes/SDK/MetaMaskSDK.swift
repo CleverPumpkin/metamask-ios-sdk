@@ -132,11 +132,20 @@ public extension MetaMaskSDK {
 		
 		switch requestResult {
 		case let .success(value):
-			let jsonData = try JSONSerialization.data(withJSONObject: value)
-			if let jsonString = String(data: jsonData, encoding: .utf8) {
-				return .success(jsonString)
+			if let stringValue = value as? String {
+				let jsonData = try JSONEncoder().encode(stringValue)
+				if let jsonString = String(data: jsonData, encoding: .utf8) {
+					return .success(jsonString)
+				} else {
+					return .failure(.responseError)
+				}
 			} else {
-				return .failure(.responseError)
+				let jsonData = try JSONSerialization.data(withJSONObject: value)
+				if let jsonString = String(data: jsonData, encoding: .utf8) {
+					return .success(jsonString)
+				} else {
+					return .failure(.responseError)
+				}
 			}
 		case let .failure(error):
 			return .failure(error)
