@@ -16,6 +16,9 @@ protocol EthereumEventsDelegate: AnyObject {
 public class Ethereum {
     static let CONNECTION_ID = TimestampGenerator.timestamp()
     static let BATCH_CONNECTION_ID = TimestampGenerator.timestamp()
+	
+	public internal(set) var connected: Bool = false
+	
     var submittedRequests: [String: SubmittedRequest] = [:]
     private var cancellables: Set<AnyCancellable> = []
 
@@ -23,8 +26,6 @@ public class Ethereum {
     var infuraProvider: InfuraProvider?
 
     weak var delegate: EthereumEventsDelegate?
-
-    var connected: Bool = false
 
     /// The active/selected MetaMask account chain
     var chainId: String = ""
