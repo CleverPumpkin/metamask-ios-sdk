@@ -42,6 +42,7 @@ public class Ethereum {
     var track: ((Event, [String: Any]) -> Void)?
     private let ACCOUNT_KEY = "ACCOUNT_KEY"
     private let CHAINID_KEY = "CHAIN_ID_KEY"
+	private let submittedRequestsLock = NSLock()
     
 
     private init(transport: Transport,
@@ -585,9 +586,11 @@ public class Ethereum {
             
             return RequestError.failWithError(.connectError)
         } else {
+			submittedRequestsLock.lock()
             let id = request.id
             let submittedRequest = SubmittedRequest(method: request.method)
             submittedRequests[id] = submittedRequest
+			submittedRequestsLock.unlock()
             let publisher = submittedRequests[id]?.publisher
 
             if connected || !account.isEmpty {
