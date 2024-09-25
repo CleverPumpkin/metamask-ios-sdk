@@ -375,6 +375,7 @@ extension SocketClient {
 
     func handleEncryptedMessage(_ message: SocketMessage<String>) throws {
         let decryptedText = try keyExchange.decryptMessage(message.message)
+		Logging.log("handleEncryptedMessage decryptedText: \(decryptedText)")
 
         let json: [String: Any] = try JSONSerialization.jsonObject(
             with: Data(decryptedText.utf8),

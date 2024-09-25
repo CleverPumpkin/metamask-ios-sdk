@@ -16,7 +16,9 @@ protocol EthereumEventsDelegate: AnyObject {
 public class Ethereum {
     static let CONNECTION_ID = TimestampGenerator.timestamp()
     static let BATCH_CONNECTION_ID = TimestampGenerator.timestamp()
-    
+	
+	public internal(set) var connected: Bool = false
+	
     var submittedRequests: [String: SubmittedRequest] = [:]
     private let queue = DispatchQueue(label: "submittedRequests.queue")
     
@@ -26,8 +28,6 @@ public class Ethereum {
     let readOnlyRPCProvider: ReadOnlyRPCProvider
 
     weak var delegate: EthereumEventsDelegate?
-
-    var connected: Bool = false
 
     /// The active/selected MetaMask account chain
     var chainId: String = ""
@@ -186,6 +186,32 @@ public class Ethereum {
 
         return publisher
     }
+	
+	func performAsyncOperationWithJSON(_ publisher: EthereumPublisher?) async -> Result<Any, RequestError> {
+		guard let publisher = publisher else {
+			return .failure(.genericError)
+		}
+
+		return await withCheckedContinuation { continuation in
+			publisher
+//				.tryMap { output in
+//					return output
+//				}
+				.mapError { error in
+					error as? RequestError ?? RequestError.responseError
+				}
+				.sink(receiveCompletion: { completion in
+					switch completion {
+					case .finished:
+						break
+					case .failure(let error):
+						continuation.resume(returning: .failure(error))
+					}
+				}, receiveValue: { result in
+					continuation.resume(returning: .success(result))
+				}).store(in: &cancellables)
+		}
+	}
     
     func performAsyncOperation<T>(_ publisher: EthereumPublisher?, defaultValue: T) async -> Result<T, RequestError> {
         guard let publisher = publisher else {
@@ -229,6 +255,11 @@ public class Ethereum {
             }
         }
     }
+	
+	func requestWithJSON(_ req: any RPCRequest) async -> Result<Any, RequestError> {
+		let publisher = performRequest(req)
+		return await performAsyncOperationWithJSON(publisher)
+	}
     
     func request(_ req: any RPCRequest) async -> Result<String, RequestError> {
         let publisher = performRequest(req)
@@ -348,6 +379,10 @@ public class Ethereum {
     func connectWith<T: CodableData>(_ req: EthereumRequest<T>) async -> Result<String, RequestError> {
         return await performAsyncOperation(connectWith(req), defaultValue: String()) as Result<String, RequestError>
     }
+	
+	func connectWithJSON<T: CodableData>(_ req: EthereumRequest<T>) async -> Result<Any, RequestError> {
+		return await performAsyncOperationWithJSON(connectWith(req))
+	}
 
     // MARK: Convenience Methods
 
