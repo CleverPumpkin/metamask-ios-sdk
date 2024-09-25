@@ -193,12 +193,12 @@ public class Ethereum {
 		}
 
 		return await withCheckedContinuation { continuation in
-			publisher
+			let cancellable = publisher
 //				.tryMap { output in
 //					return output
 //				}
 				.mapError { error in
-					error as? RequestError ?? RequestError.responseError
+					error ?? RequestError.responseError
 				}
 				.sink(receiveCompletion: { completion in
 					switch completion {
@@ -209,7 +209,11 @@ public class Ethereum {
 					}
 				}, receiveValue: { result in
 					continuation.resume(returning: .success(result))
-				}).store(in: &cancellables)
+				})
+			
+			cancellablesLock.sync {
+				cancellables.insert(cancellable)
+			}
 		}
 	}
     
