@@ -574,6 +574,8 @@ public class Ethereum {
                 let authorise = EthereumMethod.requiresAuthorisation(request.methodType)
                 let skipAuthorisation = request.methodType == .ethRequestAccounts && !account.isEmpty
 
+				
+				Logging.log("sendRequest. Method type: \(request.methodType). Authorize: \(authorise), SkipAuthorization: \(skipAuthorisation)")
                 if authorise && !skipAuthorisation {
                     commClient.requestAuthorisation()
                 }

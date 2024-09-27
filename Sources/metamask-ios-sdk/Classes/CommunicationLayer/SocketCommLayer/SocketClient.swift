@@ -214,7 +214,9 @@ extension SocketClient {
             if keyExchange.isKeysExchangedViaV2Protocol {
                 isReady = true
             }
-
+			
+			Logging.log("on connect isReady: \(self.isReady)")
+			
             if !self.isReady {
                 self.deeplinkToMetaMask()
             }
@@ -386,6 +388,7 @@ extension SocketClient {
     }
 
     func handleResponseMessage(_ json: [String: Any]) {
+		Logging.log("handleResponseMessage json: \(json)")
         if json["type"] as? String == "terminate" {
             disconnect()
             onClientsTerminated?()
@@ -448,6 +451,7 @@ extension SocketClient {
     }
 
     public func sendMessage<T: Codable>(_ message: T, encrypt: Bool, options: [String: String] = [:]) {
+		Logging.log("SocketClient.sendMessage: \(message), encrypt: \(encrypt), options: \(options)")
         if encrypt && !keyExchange.keysExchanged {
             addRequest { [weak self] in
                 guard let self = self else { return }
