@@ -1,3 +1,6 @@
+Форк библиотеки [metamask-ios-sdk](https://github.com/MetaMask/metamask-ios-sdk). При обновлении основного репозитория есть смысл обновлять и этот форк.
+Основная доработка в этом форке – получение ответов от метамаска в формате json строки, в которую энкодится любая моделька ответа. В основном репозитории поддерживаются только String и [String] типы в качестве ответа от sdk.
+
 # MetaMask iOS SDK
 
 Import MetaMask SDK into your native iOS dapp to enable your users to easily connect with their
