@@ -126,7 +126,11 @@ public extension MetaMaskSDK {
 					return .failure(.responseError)
 				}
 			} else {
-				let jsonData = try JSONSerialization.data(withJSONObject: value)
+				let jsonData = try JSONSerialization.data(
+					withJSONObject: value,
+					options: .fragmentsAllowed
+				)
+				
 				if let jsonString = String(data: jsonData, encoding: .utf8) {
 					return .success(jsonString)
 				} else {
