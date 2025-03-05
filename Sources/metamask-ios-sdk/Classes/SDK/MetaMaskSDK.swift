@@ -113,15 +113,6 @@ public extension MetaMaskSDK {
         await ethereum.connectWith(request)
     }
 	
-	func connectWith<T: CodableData>(_ requests: [EthereumRequest<T>]) async -> Result<[String], RequestError> {
-		let batchRequest = EthereumRequest(
-			method: EthereumMethod.metamaskBatch.rawValue,
-			params: requests
-		)
-		
-		return await ethereum.connectWith(batchRequest)
-	}
-	
 	func connectWithJSON<T: CodableData>(_ request: EthereumRequest<T>) async throws -> Result<String, RequestError> {
 		let requestResult = await ethereum.connectWithJSON(request)
 		
